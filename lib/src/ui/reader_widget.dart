@@ -48,7 +48,7 @@ class ReaderWidget extends StatefulWidget {
   /// Called when a code is detected
   final Function(Code)? onScan;
 
-  final Function(Code, Uint8List?)? onScanImage;
+  final Function(Code, CameraImage?)? onScanImage;
 
   /// Called when a code is not detected
   final Function(Code)? onScanFailure;
@@ -312,10 +312,10 @@ class _ReaderWidgetState extends State<ReaderWidget>
             params: params,
           );
 
-          final Uint8List img = image.planes.first.bytes;
+          // final Uint8List img = image.planes.first.bytes;
           if (result.isValid) {
             widget.onScan?.call(result);
-            widget.onScanImage?.call(result, img);
+            widget.onScanImage?.call(result, image);
             setState(() {});
             await Future<void>.delayed(widget.scanDelaySuccess);
           } else {
