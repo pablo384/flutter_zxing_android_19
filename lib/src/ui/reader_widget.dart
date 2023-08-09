@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,6 +15,7 @@ class ReaderWidget extends StatefulWidget {
   const ReaderWidget({
     super.key,
     this.onScan,
+    this.onScanImage,
     this.onScanFailure,
     this.onMultiScan,
     this.onMultiScanFailure,
@@ -45,6 +47,8 @@ class ReaderWidget extends StatefulWidget {
 
   /// Called when a code is detected
   final Function(Code)? onScan;
+
+  final Function(Code, Uint8List?)? onScanImage;
 
   /// Called when a code is not detected
   final Function(Code)? onScanFailure;
@@ -307,8 +311,11 @@ class _ReaderWidgetState extends State<ReaderWidget>
             image,
             params: params,
           );
+
+          final Uint8List img = image.planes.first.bytes;
           if (result.isValid) {
             widget.onScan?.call(result);
+            widget.onScanImage?.call(result, img);
             setState(() {});
             await Future<void>.delayed(widget.scanDelaySuccess);
           } else {
