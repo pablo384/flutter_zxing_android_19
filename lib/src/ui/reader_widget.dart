@@ -48,7 +48,7 @@ class ReaderWidget extends StatefulWidget {
   /// Called when a code is detected
   final Function(Code)? onScan;
 
-  final Function(Code, CameraImage?)? onScanImage;
+  final Function(Code, XFile?)? onScanImage;
 
   /// Called when a code is not detected
   final Function(Code)? onScanFailure;
@@ -315,7 +315,8 @@ class _ReaderWidgetState extends State<ReaderWidget>
           // final Uint8List img = image.planes.first.bytes;
           if (result.isValid) {
             widget.onScan?.call(result);
-            widget.onScanImage?.call(result, image);
+            var file = await controller!.takePicture();
+            widget.onScanImage?.call(result, file);
             setState(() {});
             await Future<void>.delayed(widget.scanDelaySuccess);
           } else {
