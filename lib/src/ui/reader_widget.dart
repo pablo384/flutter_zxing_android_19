@@ -277,6 +277,7 @@ class _ReaderWidgetState extends State<ReaderWidget>
   Future<void> processImageStream(CameraImage image) async {
     if (!_isProcessing) {
       _isProcessing = true;
+      XFile? finalFile;
       try {
         final double cropPercent = widget.isMultiScan ? 0 : widget.cropPercent;
         final int cropSize =
@@ -296,7 +297,7 @@ class _ReaderWidgetState extends State<ReaderWidget>
             params: params,
           );
           if (result.codes.isNotEmpty) {
-            results = result;
+            // results = result;
             widget.onMultiScan?.call(result);
             setState(() {});
             if (!widget.isMultiScan) {
@@ -311,22 +312,32 @@ class _ReaderWidgetState extends State<ReaderWidget>
             image,
             params: params,
           );
-
-          // final Uint8List img = image.planes.first.bytes;
           if (result.isValid) {
             widget.onScan?.call(result);
-            var file = await controller!.takePicture();
-            widget.onScanImage?.call(result, file);
+            try {
+              print("file::controller::${controller != null}::");
+              print(
+                  "file::controller:isInitialized:${controller!.value.isInitialized}::");
+              final XFile file = await controller!.takePicture();
+              print("file::capturado::${file.path}");
+              finalFile = file;
+            } catch (e, i) {
+              print("error:camera" + e.toString());
+              print(i.toString());
+            }
+            widget.onScanImage?.call(result, finalFile);
             setState(() {});
             await Future<void>.delayed(widget.scanDelaySuccess);
           } else {
             widget.onScanFailure?.call(result);
           }
         }
-      } on FileSystemException catch (e) {
+      } on FileSystemException catch (e, i) {
         debugPrint(e.message);
-      } catch (e) {
+        print(i.toString());
+      } catch (e, i) {
         debugPrint(e.toString());
+        print(i.toString());
       }
       await Future<void>.delayed(widget.scanDelay);
       _isProcessing = false;
