@@ -44,7 +44,7 @@ class _DemoPageState extends State<DemoPage> {
   Code? result;
   Codes? multiResult;
 
-  bool isMultiScan = false;
+  bool isMultiScan = true;
 
   bool showDebugInfo = true;
   int successScans = 0;
@@ -89,7 +89,7 @@ class _DemoPageState extends State<DemoPage> {
                     onMultiScanFailure: _onMultiScanFailure,
                     onMultiScanModeChanged: _onMultiScanModeChanged,
                     isMultiScan: isMultiScan,
-                    scanDelay: Duration(milliseconds: isMultiScan ? 50 : 500),
+                    scanDelay: const Duration(milliseconds: 50 ),
                     resolution: ResolutionPreset.high,
                     lensDirection: CameraLensDirection.back,
                   ),
@@ -154,6 +154,7 @@ class _DemoPageState extends State<DemoPage> {
     setState(() {
       successScans++;
       multiResult = codes;
+      result = codes.codes.first;
     });
   }
 

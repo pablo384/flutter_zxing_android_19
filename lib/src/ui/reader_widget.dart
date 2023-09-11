@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../flutter_zxing.dart';
+import '../utils/image_converter.dart';
 import 'scan_mode_dropdown.dart';
 
 /// Widget to scan a code from the camera stream
@@ -48,7 +49,7 @@ class ReaderWidget extends StatefulWidget {
   /// Called when a code is detected
   final Function(Code)? onScan;
 
-  final Function(Code, XFile?)? onScanImage;
+  final Function(Code, dynamic)? onScanImage;
 
   /// Called when a code is not detected
   final Function(Code)? onScanFailure;
@@ -296,6 +297,17 @@ class _ReaderWidgetState extends State<ReaderWidget>
             params: params,
           );
           if (result.codes.isNotEmpty) {
+            try {
+              var img = await convertImage(image);
+              if (img != null) {
+                print("IMAGE EXISTTEE::");
+                print(img.toString());
+                widget.onScanImage?.call(result.codes.first, img);
+              }
+            } catch (e, i) {
+              print(e.toString());
+              print(i.toString());
+            }
             // results = result;
             widget.onMultiScan?.call(result);
             setState(() {});

@@ -17,8 +17,7 @@ Future<Uint8List> convertImage(CameraImage image) async {
       return _getLuminanceBytes(bytes, image.width, image.height);
     }
     // return img.getBytes(format: imglib.Format.luminance); //.toUint8List();
-    return img.toUint8List();
-
+    // return img.toUint8List();
   } catch (e) {
     debugPrint('>>>>>>>>>>>> ERROR: $e');
   }
@@ -27,7 +26,7 @@ Future<Uint8List> convertImage(CameraImage image) async {
 
 imglib.Image convertBGRA8888(CameraImage image) {
   return imglib.Image.fromBytes(
- width: image.width,
+    width: image.width,
     height: image.height,
     bytes: image.planes[0].bytes.buffer,
     // format: imglib.Format.bgra,
