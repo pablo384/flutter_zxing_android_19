@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.4.1
+
+* Replaced 'hidden' with 'default' for improved compatibility with older Flutter versions
+
+## 1.4.0
+
+* Updated Image to v4
+
+## 1.3.2
+
+* Conditionally add namespace for AGP 8 support
+* Set minimum Flutter version to 3.7.0
+
+## 1.3.1
+
+* Utilized Flutter version 3.1.0 or higher
+
+## 1.3.0
+
+* Updated zxing-cpp to v2.1.0
+
 ## 1.2.1
 
 * Moved `melos` to dev dependencies (thanks to [@phlip9](https://github.com/phlip9))

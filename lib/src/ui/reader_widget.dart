@@ -194,14 +194,13 @@ class _ReaderWidgetState extends State<ReaderWidget>
           onNewCameraSelected(cameras.first);
         }
         break;
-      case AppLifecycleState.inactive:
-      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        break;
+      default:
         controller?.dispose();
         setState(() {
           _isCameraOn = false;
         });
-        break;
-      case AppLifecycleState.detached:
         break;
     }
   }
