@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -14,6 +15,7 @@ class ReaderWidget extends StatefulWidget {
   const ReaderWidget({
     super.key,
     this.onScan,
+    this.onScanImage,
     this.onScanFailure,
     this.onMultiScan,
     this.onMultiScanFailure,
@@ -45,6 +47,8 @@ class ReaderWidget extends StatefulWidget {
 
   /// Called when a code is detected
   final Function(Code)? onScan;
+
+  final Function(Code, XFile?)? onScanImage;
 
   /// Called when a code is not detected
   final Function(Code)? onScanFailure;
@@ -272,6 +276,7 @@ class _ReaderWidgetState extends State<ReaderWidget>
   Future<void> processImageStream(CameraImage image) async {
     if (!_isProcessing) {
       _isProcessing = true;
+      XFile? finalFile;
       try {
         final double cropPercent = widget.isMultiScan ? 0 : widget.cropPercent;
         final int cropSize =
@@ -291,7 +296,7 @@ class _ReaderWidgetState extends State<ReaderWidget>
             params: params,
           );
           if (result.codes.isNotEmpty) {
-            results = result;
+            // results = result;
             widget.onMultiScan?.call(result);
             setState(() {});
             if (!widget.isMultiScan) {
@@ -308,16 +313,30 @@ class _ReaderWidgetState extends State<ReaderWidget>
           );
           if (result.isValid) {
             widget.onScan?.call(result);
+            try {
+              print("file::controller::${controller != null}::");
+              print(
+                  "file::controller:isInitialized:${controller!.value.isInitialized}::");
+              final XFile file = await controller!.takePicture();
+              print("file::capturado::${file.path}");
+              finalFile = file;
+            } catch (e, i) {
+              print("error:camera" + e.toString());
+              print(i.toString());
+            }
+            widget.onScanImage?.call(result, finalFile);
             setState(() {});
             await Future<void>.delayed(widget.scanDelaySuccess);
           } else {
             widget.onScanFailure?.call(result);
           }
         }
-      } on FileSystemException catch (e) {
+      } on FileSystemException catch (e, i) {
         debugPrint(e.message);
-      } catch (e) {
+        print(i.toString());
+      } catch (e, i) {
         debugPrint(e.toString());
+        print(i.toString());
       }
       await Future<void>.delayed(widget.scanDelay);
       _isProcessing = false;
