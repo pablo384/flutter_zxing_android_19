@@ -3,9 +3,9 @@ import 'dart:io';
 import 'dart:math';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:screenshot/screenshot.dart';
 
 import '../../flutter_zxing.dart';
 import '../utils/image_converter.dart';
@@ -139,6 +139,8 @@ class _ReaderWidgetState extends State<ReaderWidget>
   List<CameraDescription> cameras = <CameraDescription>[];
   CameraDescription? selectedCamera;
   CameraController? controller;
+   //Create an instance of ScreenshotController
+  ScreenshotController screenshotController = ScreenshotController(); 
 
   // true when code detecting is ongoing
   bool _isProcessing = false;
@@ -298,12 +300,18 @@ class _ReaderWidgetState extends State<ReaderWidget>
           );
           if (result.codes.isNotEmpty) {
             try {
-              var img = await convertImage(image);
-              if (img != null) {
-                print("IMAGE EXISTTEE::");
-                print(img.toString());
-                widget.onScanImage?.call(result.codes.first, img);
-              }
+              // var img = await convertImage(image);
+              // if (img != null) {
+                var imgMemory = await screenshotController.capture();
+                // print("file::controller::${controller != null}::");
+                // print(
+                //     "file::controller:isInitialized:${controller!.value.isInitialized}::");
+                // final XFile file = await controller!.takePicture();
+                // print("file::capturado::${file.path}");
+                // print("IMAGE EXISTTEE::");
+                // print`(img.toString());`
+                widget.onScanImage?.call(result.codes.first, imgMemory);
+              // }
             } catch (e, i) {
               print(e.toString());
               print(i.toString());
@@ -379,17 +387,20 @@ class _ReaderWidgetState extends State<ReaderWidget>
                   fit: BoxFit.cover,
                   child: SizedBox(
                     width: cameraMaxSize,
-                    child: CameraPreview(
-                      controller!,
-                      child: widget.showScannerOverlay &&
-                              widget.isMultiScan &&
-                              results.codes.isNotEmpty
-                          ? MultiResultOverlay(
-                              results: results.codes,
-                              onCodeTap: widget.onScan,
-                              controller: controller,
-                            )
-                          : null,
+                    child: Screenshot(
+                      controller: screenshotController,
+                      child: CameraPreview(
+                        controller!,
+                        child: widget.showScannerOverlay &&
+                                widget.isMultiScan &&
+                                results.codes.isNotEmpty
+                            ? MultiResultOverlay(
+                                results: results.codes,
+                                onCodeTap: widget.onScan,
+                                controller: controller,
+                              )
+                            : null,
+                      ),
                     ),
                   ),
                 ),

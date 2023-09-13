@@ -86,6 +86,16 @@ class _DemoPageState extends State<DemoPage> {
                     onScan: _onScanSuccess,
                     onScanFailure: _onScanFailure,
                     onMultiScan: _onMultiScanSuccess,
+                    onScanImage: (p0, p1) {
+                      Navigator.of(context)
+                          .push(MaterialPageRoute(builder: (c) {
+                        return Scaffold(
+                          body: Container(
+                            child: Image.memory(p1 as Uint8List),
+                          ),
+                        );
+                      }));
+                    },
                     onMultiScanFailure: _onMultiScanFailure,
                     onMultiScanModeChanged: _onMultiScanModeChanged,
                     isMultiScan: isMultiScan,
